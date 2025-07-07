@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMECEGÉ - Ropa Femenina</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Cart Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F5F5DC; /* Beige claro */
+        }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 0.5rem; /* Rounded corners */
+            overflow: hidden; /* Ensures rounded corners apply to children */
+        }
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+        .dropdown-menu a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s ease;
+        }
+        .dropdown-menu a:hover {
+            background-color: #F0F0F0; /* Light gray on hover */
+        }
+        .section-content {
+            display: none; /* Hidden by default */
+        }
+        .product-card {
+            background-color: white;
+            border-radius: 0.75rem; /* Rounded corners */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.2s ease-in-out;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        .product-image-placeholder {
+            background-color: #E0E0E0; /* Light gray placeholder */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px; /* Fixed height for image placeholder */
+            font-size: 1.5rem;
+            color: #666;
+            border-bottom: 1px solid #ddd;
+        }
+        /* Cart Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 100; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border-radius: 0.75rem;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm py-4 px-6 flex justify-between items-center rounded-b-lg">
+        <div class="text-3xl font-bold text-black">EMECEGÉ</div>
+        <nav>
+            <ul class="flex space-x-8 items-center">
+                <li class="relative dropdown">
+                    <a href="#" class="text-lg font-medium text-gray-700 hover:text-black transition duration-300">Ropa de Mujer</a>
+                    <div class="dropdown-menu">
+                        <a href="#" onclick="showSection('mujer-sets')">Sets</a>
+                        <a href="#" onclick="showSection('mujer-vestidos')">Vestidos</a>
+                        <a href="#" onclick="showSection('mujer-shorts')">Shorts</a>
+                        <a href="#" onclick="showSection('mujer-conjuntos')">Conjuntos</a>
+                        <a href="#" onclick="showSection('mujer-tops')">Tops</a>
+                        <a href="#" onclick="showSection('mujer-faldas')">Faldas</a>
+                        <a href="#" onclick="showSection('mujer-pantalones')">Pantalones</a>
+                        <a href="#" onclick="showSection('mujer-blusas')">Blusas</a>
+                        <a href="#" onclick="showSection('mujer-chaquetas')">Chaquetas</a>
+                    </div>
+                </li>
+                <li class="relative dropdown">
+                    <a href="#" class="text-lg font-medium text-gray-700 hover:text-black transition duration-300">Ropa de Niña</a>
+                    <div class="dropdown-menu">
+                        <a href="#" onclick="showSection('nina-sets')">Sets</a>
+                        <a href="#" onclick="showSection('nina-vestidos')">Vestidos</a>
+                        <a href="#" onclick="showSection('nina-shorts')">Shorts</a>
+                        <a href="#" onclick="showSection('nina-conjuntos')">Conjuntos</a>
+                        <a href="#" onclick="showSection('nina-tops')">Tops</a>
+                        <a href="#" onclick="showSection('nina-faldas')">Faldas</a>
+                        <a href="#" onclick="showSection('nina-pantalones')">Pantalones</a>
+                        <a href="#" onclick="showSection('nina-blusas')">Blusas</a>
+                        <a href="#" onclick="showSection('nina-chaquetas')">Chaquetas</a>
+                    </div>
+                </li>
+                <li><a href="http://wa.me/573023600550" target="_blank" class="text-lg font-medium text-gray-700 hover:text-black transition duration-300">Contacto</a></li>
+                <li>
+                    <button onclick="openCartModal()" class="relative text-gray-700 hover:text-black transition duration-300 focus:outline-none">
+                        <i class="fas fa-shopping-cart text-2xl"></i>
+                        <span id="cart-count" class="absolute -top-2 -right-2 bg-black text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto my-8 p-6 bg-white rounded-lg shadow-lg">
+
+        <!-- Initial Welcome Section -->
+        <section id="welcome-section" class="text-center py-12">
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">Bienvenida a EMECEGÉ</h2>
+            <p class="text-xl text-gray-600">Descubre nuestra exclusiva colección de ropa femenina y de niña.</p>
+            <p class="text-lg text-gray-500 mt-4">Selecciona una categoría en el menú superior para empezar a explorar.</p>
+
+            <div class="mt-10">
+                <h3 class="text-2xl font-semibold mb-4 text-gray-800">Nuestra Zona de Cobertura</h3>
+                <p class="text-gray-600 mb-4">Actualmente cubrimos envíos en Barranquilla y sus alrededores.</p>
+                <div class="relative overflow-hidden rounded-lg shadow-md" style="padding-top: 56.25%;">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15689.65825316082!2d-74.80210219999999!3d10.96328325!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8ef42d2a4a3b7c8b%3A0x16d9b04d16d6b60e!2sBarranquilla%2C%20Atl%C3%A1ntico%2C%20Colombia!5e0!3m2!1sen!2sus!4v1678901234567!5m2!1sen!2sus"
+                        width="100%"
+                        height="100%"
+                        style="border:0; position:absolute; top:0; left:0;"
+                        allowfullscreen=""
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+            </div>
+        </section>
+
+        <!-- Ropa de Mujer Sections -->
+        <section id="mujer-sets" class="section-content">
+            <button onclick="showSection('welcome-section')" class="mb-6 bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition duration-300">Volver</button>
+            <h3 class="text-3xl font-semibold mb-6 text-gray-800">Ropa de Mujer - Sets</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Product Card 1 -->
+                <div class="product-card" data-product-name="Set Elegante Casual" data-product-price="35.00">
+                    <div class="product-image-placeholder">Imagen Aquí</div>
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold text-gray-900">Set Elegante Casual</h4>
+                        <p class="text-gray-600 mt-2">Un set versátil para cualquier ocasión.</p>
+                        <p class="text-lg font-bold text-black mt-3">$35.00</p>
+                        <button onclick="addToCart(this)" class="mt-4 w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300">Agregar al Carrito</button>
+                    </div>
+                </div>
+                <!-- Product Card 2 -->
+                <div class="product-card" data-product-name="Set de Verano Fresco" data-product-price="30.00">
+                    <div class="product-image-placeholder">Imagen Aquí</div>
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold text-gray-900">Set de Verano Fresco</h4>
+                        <p class="text-gray-600 mt-2">Ideal para días soleados y relajados.</p>
+                        <p class="text-lg font-bold text-black mt-3">$30.00</p>
+                        <button onclick="addToCart(this)" class="mt-4 w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300">Agregar al Carrito</button>
+                    </div>
+                </div>
+                <!-- Add more product cards as needed -->
+            </div>
+        </section>
+
+        <section id="mujer-vestidos" class="section-content">
+            <button onclick="showSection('welcome-section')" class="mb-6 bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition duration-300">Volver</button>
+            <h3 class="text-3xl font-semibold mb-6 text-gray-800">Ropa de Mujer - Vestidos</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div class="product-card" data-product-name="Vestido Floral Midi" data-product-price="45.00">
+                    <div class="product-image-placeholder">Imagen Aquí</div>
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold text-gray-900">Vestido Floral Midi</h4>
+                        <p class="text-gray-600 mt-2">Perfecto para un look primaveral.</p>
+                        <p class="text-lg font-bold text-black mt-3">$45.00</p>
+                        <button onclick="addToCart(this)" class="mt-4 w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300">Agregar al Carrito</button>
+                    </div>
+                </div>
+                <div class="product-card" data-product-name="Vestido de Noche Negro" data-product-price="60.00">
+                    <div class="product-image-placeholder">Imagen Aquí</div>
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold text-gray-900">Vestido de Noche Negro</h4>
+                        <p class="text-gray-600 mt-2">Elegancia y sofisticación para eventos especiales.</p>
+                        <p class="text-lg font-bold text-black mt-3">$60.00</p>
+                        <button onclick="addToCart(this)" class="mt-4 w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300">Agregar al Carrito</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="mujer-shorts" class="section-content">
+            <button onclick="showSection('welcome-section')" class="mb-6 bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition duration-300">Volver</button>
+            <h3 class="text-3xl font-semibold mb-6 text-gray-800">Ropa de Mujer - Shorts</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div class="product-card" data-product-name="Shorts de Lino Casual" data-product-price="25.00">
+                    <div class="product-image-placeholder">Imagen Aquí</div>
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold text-gray-900">Shorts de Lino Casual</h4>
+                        <p class="text-gray-600 mt-2">Comodidad y estilo para el día a día.</p>
+                        <p class="text-lg font-bold text-black mt-3">$25.00</p>
+                        <button onclick="addToCart(this)" class="mt-4 w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300">Agregar al Carrito</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="mujer-conjuntos" class="section-content">
+            <button onclick="showSection('welcome-section')" class="mb-6 bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition duration-300">Volver</button>
+            <h3 class="text-3xl font-semibold mb-6 text-gray-800">Ropa de Mujer - Conjuntos</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div class="product-card" data-product-name="Conjunto Deportivo Chic" data-product-price="55.00">
+                    <div class="product-image-placeholder">Imagen Aquí</div>
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold text-gray-900">Conjunto Deportivo Chic</h4>
+                        <p class="text-gray-600 mt-2">Perfecto para el gimnasio o un paseo.</p>
+                        <p class="text-lg font-bold text-black mt-3">$55.00</p>
+                        <button onclick="addToCart(this)" class="mt-4 w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300">Agregar al Carrito</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="mujer-tops" class="section-content">
+            <button onclick="showSection('welcome-section')" class="mb-6 bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition duration-300">Volver</button>
+            <h3 class="text-3xl font-semibold mb-6 text-gray-800">Ropa de Mujer - Tops</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div class="product-card" data-product-name="Top de Seda Elegante" data-product-price="30.00">
+                    <div class="product-image-placeholder">Imagen Aquí</div>
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold text-gray-900">Top de Seda Elegante</h4>
+                        <p class="text-gray-600 mt-2">Ideal para combinar con faldas o pantalones.</p>
+                        <p class="text-lg font-bold text-black mt-3">$30.00</p>
+                        <button onclick="addToCart(this)" class="mt-4 w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300">Agregar al Carrito</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="mujer-faldas" class="section-content">
+            <button onclick="showSection('welcome-section')" class="mb-6 bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition duration-300">Volver</button>
+            <h3 class="text-3xl font-semibold mb-6 text-gray-800">Ropa de Mujer - Faldas</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div class="product-card" data-product-name="Falda Plisada Clásica" data-product-price="38.00">
+                    <div class="product-image-placeholder">Imagen Aquí</div>
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold text-gray-900">Falda Plisada Clásica</h4>
+                        <p class="text-gray-600 mt-2">Un básico atemporal para tu armario.</p>
+                        <p class="text-lg font-bold text-black mt-3">$38.00</p>
+                        <button onclick="addToCart(this)" class="mt-4 w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300">Agregar al Carrito</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="mujer-pantalones" class="section-content">
+            <button onclick="showSection('welcome-section')" class="mb-6 bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition duration-300">Volver</button>
+            <h3 class="text-3xl font-semibold mb-6 text-gray-800">Ropa de Mujer - Pantalones</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div class="product-card" data-product-name="Pantalón Palazzo Elegante" data-product-price="42.00">
+                    <div class="product-image-placeholder">Imagen Aquí</div>
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold text-gray-900">Pantalón Palazzo Elegante</h4>
+                        <p class="text-gray-600 mt-2">Comodidad y estilo para cualquier evento.</p>
+                        <p class="text-lg font-bold text-black mt-3">$42.00</p>
+                        <button onclick="addToCart(this)" class="mt-4 w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300">Agregar al Carrito</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="mujer-blusas" class="section-content">
+            <button onclick="showSection('welcome-section')" class="mb-6 bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition duration-300">Volver</button>
+            <h3 class="text-3xl font-semibold mb-6 text-gray-800">Ropa de Mujer - Blusas</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div class="product-card" data-product-name="Blusa de Gasa Fluida" data-product-price="32.00">
+                    <div class="product-image-placeholder">Imagen Aquí</div>
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold text-gray-900">Blusa de Gasa Fluida</h4>
+                        <p class="text-gray-600 mt-2">Ligera y sofisticada para tu día a día.</p>
+                        <p class="text-lg font-bold text-black mt-3">$32.00</p>
+                        <button onclick="addToCart(this)" class="mt-4 w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300">Agregar al Carrito</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="mujer-chaquetas" class="section-content">
+            <button onclick="showSection('welcome-section')" class="mb-6 bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition duration-300">Volver</button>
+            <h3 class="text-3xl font-semibold mb-6 text-gray-800">Ropa de Mujer - Chaquetas</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div class="product-card" data-product-name="Chaqueta de Mezclilla Clásica" data-product-price="50.00">
+                    <div class="product-image-placeholder">Imagen Aquí</div>
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold text-gray-900">Chaqueta de Mezclilla Clásica</h4>
+                        <p class="text-gray-600 mt-2">Un toque casual para cualquier atuendo.</p>
+                        <p class="text-lg font-bold text-black mt-3">$50.00</p>
+                        <button onclick="addToCart(this)" class="mt-4 w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300">Agregar al Carrito</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Ropa de Niña Sections -->
+        <section id="nina-sets" class="section-content">
+            <button onclick="showSection('welcome-section')" class="mb-6 bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition duration-300">Volver</button>
+            <h3 class="text-3xl font-semibold mb-6 text-gray-800">Ropa de Niña - Sets</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div class="product-card" data-product-name="Set de Juego Divertido" data-product-price="28.00">
+                    <div class="product-image-placeholder">Imagen Aquí</div>
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold text-gray-900">Set de Juego Divertido</h4>
+                        <p class="text-gray-600 mt-2">Cómodo y colorido para las más pequeñas.</p>
+                        <p class="text-lg font-bold text-black mt-3">$28.00</p>
+                        <button onclick="addToCart(this)" class="mt-4 w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300">Agregar al Carrito</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="nina-vestidos" class="section-content">
+            <button onclick="showSection('welcome-section')" class="mb-6 bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition duration-300">Volver</button>
+            <h3 class="text-3xl font-semibold mb-6 text-gray-800">Ropa de Niña - Vestidos</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div class="product-card" data-product-name="Vestido de Princesa" data-product-price="35.00">
+                    <div class="product-image-placeholder">Imagen Aquí</div>
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold text-gray-900">Vestido de Princesa</h4>
+                        <p class="text-gray-600 mt-2">Para sus momentos más mágicos.</p>
+                        <p class="text-lg font-bold text-black mt-3">$35.00</p>
+                        <button onclick="addToCart(this)" class="mt-4 w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300">Agregar al Carrito</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="nina-shorts" class="section-content">
+            <button onclick="showSection('welcome-section')" class="mb-6 bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition duration-300">Volver</button>
+            <h3 class="text-3xl font-semibold mb-6 text-gray-800">Ropa de Niña - Shorts</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div class="product-card" data-product-name="Shorts de Jean con Bordado" data-product-price="22.00">
+                    <div class="product-image-placeholder">Imagen Aquí</div>
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold text-gray-900">Shorts de Jean con Bordado</h4>
+                        <p class="text-gray-600 mt-2">Un clásico para el verano.</p>
+                        <p class="text-lg font-bold text-black mt-3">$22.00</p>
+                        <button onclick="addToCart(this)" class="mt-4 w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300">Agregar al Carrito</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="nina-conjuntos" class="section-content">
+            <button onclick="showSection('welcome-section')" class="mb-6 bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition duration-300">Volver</button>
+            <h3 class="text-3xl font-semibold mb-6 text-gray-800">Ropa de Niña - Conjuntos</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div class="product-card" data-product-name="Conjunto de Algodón Suave" data-product-price="38.00">
+                    <div class="product-image-placeholder">Imagen Aquí</div>
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold text-gray-900">Conjunto de Algodón Suave</h4>
+                        <p class="text-gray-600 mt-2">Ideal para la piel sensible de las niñas.</p>
+                        <p class="text-lg font-bold text-black mt-3">$38.00</p>
+                        <button onclick="addToCart(this)" class="mt-4 w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300">Agregar al Carrito</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="nina-tops" class="section-content">
+            <button onclick="showSection('welcome-section')" class="mb-6 bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition duration-300">Volver</button>
+            <h3 class="text-3xl font-semibold mb-6 text-gray-800">Ropa de Niña - Tops</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div class="product-card" data-product-name="Top con Volantes" data-product-price="18.00">
+                    <div class="product-image-placeholder">Imagen Aquí</div>
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold text-gray-900">Top con Volantes</h4>
+                        <p class="text-gray-600 mt-2">Un toque dulce y divertido.</p>
+                        <p class="text-lg font-bold text-black mt-3">$18.00</p>
+                        <button onclick="addToCart(this)" class="mt-4 w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300">Agregar al Carrito</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="nina-faldas" class="section-content">
+            <button onclick="showSection('welcome-section')" class="mb-6 bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition duration-300">Volver</button>
+            <h3 class="text-3xl font-semibold mb-6 text-gray-800">Ropa de Niña - Faldas</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div class="product-card" data-product-name="Falda Tutú Brillante" data-product-price="25.00">
+                    <div class="product-image-placeholder">Imagen Aquí</div>
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold text-gray-900">Falda Tutú Brillante</h4>
+                        <p class="text-gray-600 mt-2">Para que se sienta como una bailarina.</p>
+                        <p class="text-lg font-bold text-black mt-3">$25.00</p>
+                        <button onclick="addToCart(this)" class="mt-4 w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300">Agregar al Carrito</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="nina-pantalones" class="section-content">
+            <button onclick="showSection('welcome-section')" class="mb-6 bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition duration-300">Volver</button>
+            <h3 class="text-3xl font-semibold mb-6 text-gray-800">Ropa de Niña - Pantalones</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div class="product-card" data-product-name="Pantalón Jogger Cómodo" data-product-price="20.00">
+                    <div class="product-image-placeholder">Imagen Aquí</div>
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold text-gray-900">Pantalón Jogger Cómodo</h4>
+                        <p class="text-gray-600 mt-2">Perfecto para jugar y explorar.</p>
+                        <p class="text-lg font-bold text-black mt-3">$20.00</p>
+                        <button onclick="addToCart(this)" class="mt-4 w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300">Agregar al Carrito</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="nina-blusas" class="section-content">
+            <button onclick="showSection('welcome-section')" class="mb-6 bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition duration-300">Volver</button>
+            <h3 class="text-3xl font-semibold mb-6 text-gray-800">Ropa de Niña - Blusas</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div class="product-card" data-product-name="Blusa con Estampado de Animales" data-product-price="22.00">
+                    <div class="product-image-placeholder">Imagen Aquí</div>
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold text-gray-900">Blusa con Estampado de Animales</h4>
+                        <p class="text-gray-600 mt-2">Divertida y a la moda para las pequeñas.</p>
+                        <p class="text-lg font-bold text-black mt-3">$22.00</p>
+                        <button onclick="addToCart(this)" class="mt-4 w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300">Agregar al Carrito</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="nina-chaquetas" class="section-content">
+            <button onclick="showSection('welcome-section')" class="mb-6 bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition duration-300">Volver</button>
+            <h3 class="text-3xl font-semibold mb-6 text-gray-800">Ropa de Niña - Chaquetas</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div class="product-card" data-product-name="Chaqueta Rompevientos Colorida" data-product-price="40.00">
+                    <div class="product-image-placeholder">Imagen Aquí</div>
+                    <div class="p-4">
+                        <h4 class="text-xl font-semibold text-gray-900">Chaqueta Rompevientos Colorida</h4>
+                        <p class="text-gray-600 mt-2">Protección y estilo para sus aventuras.</p>
+                        <p class="text-lg font-bold text-black mt-3">$40.00</p>
+                        <button onclick="addToCart(this)" class="mt-4 w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-300">Agregar al Carrito</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeCartModal()">&times;</span>
+            <div id="cart-view">
+                <h2 class="text-3xl font-bold mb-6 text-gray-800">Tu Carrito de Compras</h2>
+                <div id="cart-items" class="mb-6">
+                    <!-- Cart items will be rendered here by JavaScript -->
+                </div>
+                <!-- Moved empty-cart-message outside cart-items to prevent it from being removed -->
+                <p class="text-gray-600" id="empty-cart-message">Tu carrito está vacío.</p>
+                <div class="flex justify-between items-center border-t pt-4">
+                    <span class="text-xl font-semibold">Total:</span>
+                    <span id="cart-total" class="text-2xl font-bold text-black">$0.00</span>
+                </div>
+                <button onclick="proceedToCheckoutForm()" class="mt-6 w-full bg-black text-white py-3 px-4 rounded-md hover:bg-gray-800 transition duration-300 text-lg" id="checkout-button">Finalizar Compra</button>
+                <p id="checkout-message" class="mt-4 text-center text-sm text-red-600"></p>
+            </div>
+
+            <div id="checkout-form-view" class="hidden">
+                <button onclick="backToCart()" class="mb-4 bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition duration-300">Volver al Carrito</button>
+                <h2 class="text-3xl font-bold mb-6 text-gray-800">Detalles de Envío y Pago</h2>
+                <form id="checkout-form" onsubmit="submitOrder(event)">
+                    <div class="mb-4">
+                        <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Nombre Completo:</label>
+                        <input type="text" id="name" name="name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="address" class="block text-gray-700 text-sm font-bold mb-2">Dirección de Envío:</label>
+                        <input type="text" id="address" name="address" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Hora Preferida de Entrega:</label>
+                        <div class="mt-2">
+                            <label class="inline-flex items-center mr-6">
+                                <input type="radio" class="form-radio text-black" name="deliveryTime" value="Mañana" required>
+                                <span class="ml-2 text-gray-700">Mañana (9 AM - 12 PM)</span>
+                            </label>
+                            <label class="inline-flex items-center mr-6">
+                                <input type="radio" class="form-radio text-black" name="deliveryTime" value="Tarde">
+                                <span class="ml-2 text-gray-700">Tarde (1 PM - 5 PM)</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" class="form-radio text-black" name="deliveryTime" value="Noche">
+                                <span class="ml-2 text-gray-700">Noche (6 PM - 9 PM)</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Método de Pago:</label>
+                        <div class="mt-2">
+                            <label class="inline-flex items-center mr-6">
+                                <input type="radio" class="form-radio text-black" name="paymentMethod" value="Transferencia" required>
+                                <span class="ml-2 text-gray-700">Transferencia Bancaria</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" class="form-radio text-black" name="paymentMethod" value="Efectivo">
+                                <span class="ml-2 text-gray-700">Efectivo al Recibir</span>
+                            </label>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-6 italic">
+                        *Recuerda que al ser una boutique indie, nuestros productos inician su producción con el pago de la mitad de su precio final.
+                    </p>
+                    <button type="submit" class="w-full bg-black text-white py-3 px-4 rounded-md hover:bg-gray-800 transition duration-300 text-lg">Confirmar Pedido</button>
+                    <p id="order-confirmation-message" class="mt-4 text-center text-sm text-green-600"></p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-black text-white py-6 text-center rounded-t-lg">
+        <p>&copy; 2025 EMECEGÉ. Todos los derechos reservados.</p>
+        <p class="mt-2 text-gray-400">Diseño y estilo para la mujer y la niña moderna.</p>
+    </footer>
+
+    <script>
+        // Array to store cart items
+        let cart = [];
+
+        // Function to show/hide sections
+        function showSection(sectionId) {
+            // Hide the welcome section
+            document.getElementById('welcome-section').style.display = 'none';
+
+            // Get all section content elements
+            const sections = document.querySelectorAll('.section-content');
+            sections.forEach(section => {
+                section.style.display = 'none'; // Hide all sections
+            });
+
+            // Show the requested section
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            }
+        }
+
+        // Function to add item to cart
+        function addToCart(buttonElement) {
+            console.log("addToCart called!"); // Debugging line
+            const productCard = buttonElement.closest('.product-card');
+            const productName = productCard.dataset.productName;
+            const productPrice = parseFloat(productCard.dataset.productPrice);
+
+            console.log("Product Name:", productName, "Product Price:", productPrice); // Debugging line
+
+            const existingItem = cart.find(item => item.name === productName);
+
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ name: productName, price: productPrice, quantity: 1 });
+            }
+            console.log("Current Cart:", cart); // Debugging line
+            updateCartDisplay();
+        }
+
+        // Function to update cart display (count in header and items in modal)
+        function updateCartDisplay() {
+            const cartCount = document.getElementById('cart-count');
+            const cartItemsContainer = document.getElementById('cart-items');
+            const emptyCartMessage = document.getElementById('empty-cart-message');
+            const cartTotalElement = document.getElementById('cart-total');
+            const checkoutButton = document.getElementById('checkout-button');
+
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalItems;
+
+            cartItemsContainer.innerHTML = ''; // Clear current items (only dynamic ones)
+
+            if (cart.length === 0) {
+                emptyCartMessage.style.display = 'block'; // Now safe
+                checkoutButton.disabled = true;
+            } else {
+                emptyCartMessage.style.display = 'none'; // Now safe
+                checkoutButton.disabled = false;
+                cart.forEach((item, index) => {
+                    const itemElement = document.createElement('div');
+                    itemElement.classList.add('flex', 'justify-between', 'items-center', 'py-2', 'border-b', 'border-gray-200');
+                    itemElement.innerHTML = `
+                        <div class="flex items-center flex-grow">
+                            <div class="w-16 h-16 bg-gray-200 flex items-center justify-center rounded-md mr-4 text-sm text-gray-500">Foto</div>
+                            <span class="text-gray-800 font-medium">${item.name}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <button onclick="changeQuantity(${index}, -1)" class="bg-gray-200 text-gray-700 px-2 py-1 rounded-md hover:bg-gray-300">-</button>
+                            <span class="mx-2 w-6 text-center">${item.quantity}</span>
+                            <button onclick="changeQuantity(${index}, 1)" class="bg-gray-200 text-gray-700 px-2 py-1 rounded-md hover:bg-gray-300">+</button>
+                            <span class="ml-4 font-semibold text-black">$${(item.price * item.quantity).toFixed(2)}</span>
+                            <button onclick="removeItem(${index})" class="ml-4 text-red-500 hover:text-red-700"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    `;
+                    cartItemsContainer.appendChild(itemElement);
+                    total += item.price * item.quantity;
+                });
+            }
+
+            cartTotalElement.textContent = `$${total.toFixed(2)}`;
+        }
+
+        // Function to change quantity of an item in cart
+        function changeQuantity(index, delta) {
+            cart[index].quantity += delta;
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1); // Remove if quantity is 0 or less
+            }
+            updateCartDisplay();
+        }
+
+        // Function to remove item from cart
+        function removeItem(index) {
+            cart.splice(index, 1);
+            updateCartDisplay();
+        }
+
+        // Functions to open and close cart modal
+        function openCartModal() {
+            document.getElementById('cart-modal').style.display = 'flex';
+            document.getElementById('cart-view').classList.remove('hidden');
+            document.getElementById('checkout-form-view').classList.add('hidden');
+            document.getElementById('checkout-message').textContent = ''; // Clear any previous messages
+            document.getElementById('order-confirmation-message').textContent = ''; // Clear any previous messages
+            updateCartDisplay(); // Ensure cart display is updated when modal opens
+        }
+
+        function closeCartModal() {
+            document.getElementById('cart-modal').style.display = 'none';
+            document.getElementById('checkout-message').textContent = ''; // Clear checkout message
+            document.getElementById('order-confirmation-message').textContent = ''; // Clear checkout message
+        }
+
+        // Function to proceed from cart view to checkout form
+        function proceedToCheckoutForm() {
+            console.log("proceedToCheckoutForm called!"); // Debugging line
+            if (cart.length === 0) {
+                document.getElementById('checkout-message').textContent = 'Tu carrito está vacío. Por favor, agrega productos antes de finalizar la compra.';
+                document.getElementById('checkout-message').classList.remove('text-green-600');
+                document.getElementById('checkout-message').classList.add('text-red-600');
+                console.log("Cart is empty, cannot proceed to checkout."); // Debugging line
+                return;
+            }
+            document.getElementById('cart-view').classList.add('hidden');
+            document.getElementById('checkout-form-view').classList.remove('hidden');
+            document.getElementById('checkout-message').textContent = ''; // Clear previous messages
+            console.log("Proceeding to checkout form."); // Debugging line
+        }
+
+        // Function to go back from checkout form to cart view
+        function backToCart() {
+            document.getElementById('checkout-form-view').classList.add('hidden');
+            document.getElementById('cart-view').classList.remove('hidden');
+            document.getElementById('order-confirmation-message').textContent = ''; // Clear confirmation message
+        }
+
+        // Function for checkout (form submission)
+        function submitOrder(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const name = document.getElementById('name').value;
+            const address = document.getElementById('address').value;
+            const deliveryTime = document.querySelector('input[name="deliveryTime"]:checked').value;
+            const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+
+            // Collect order details
+            const orderDetails = {
+                customerName: name,
+                deliveryAddress: address,
+                preferredDeliveryTime: deliveryTime,
+                paymentMethod: paymentMethod,
+                items: cart,
+                totalAmount: document.getElementById('cart-total').textContent
+            };
+
+            console.log("Order Details:", orderDetails); // For debugging: log order details
+
+            // This part would typically involve sending data to a backend server
+            // For this client-side example, we'll just show a confirmation message.
+            document.getElementById('order-confirmation-message').textContent = '¡Pedido confirmado! Nos pondremos en contacto contigo para coordinar el pago y la entrega.';
+            document.getElementById('order-confirmation-message').classList.remove('text-red-600');
+            document.getElementById('order-confirmation-message').classList.add('text-green-600');
+
+            // Optionally, clear the cart after a successful "checkout"
+            cart = [];
+            updateCartDisplay();
+
+            // Reset the form
+            document.getElementById('checkout-form').reset();
+
+            // Optionally, close the modal after a short delay or allow user to close it manually
+            // setTimeout(closeCartModal, 3000); // Close after 3 seconds
+        }
+
+        // Close the modal if the user clicks anywhere outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('cart-modal');
+            if (event.target == modal) {
+                closeCartModal();
+            }
+        }
+
+        // Initial display update
+        document.addEventListener('DOMContentLoaded', updateCartDisplay);
+    </script>
+</body>
+</html>
+ 
