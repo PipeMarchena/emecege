@@ -568,7 +568,7 @@
                     <input type="hidden" name="Detalles del Pedido" id="order-details-input">
                     <input type="hidden" name="Total del Pedido" id="order-total-input">
 
-                    <button type="submit" class="w-full bg-black text-white py-3 px-4 rounded-md hover:bg-gray-800 transition duration-300 text-lg">Confirmar Pedido</button>
+                    <button type="submit" class="w-full bg-black text-white py-3 px-4 rounded-md hover:bg-gray-800 transition duration-300 text-lg" id="submit-order-button">Confirmar Pedido</button>
                     <p id="order-confirmation-message" class="mt-4 text-center text-sm text-green-600"></p>
                 </form>
             </div>
@@ -744,11 +744,16 @@
 
         // Function for checkout (form submission)
         function submitOrder(event) {
-            document.getElementById('order-confirmation-message').textContent = '¡Enviando pedido...!';
-            document.getElementById('order-confirmation-message').classList.remove('text-red-600');
-            document.getElementById('order-confirmation-message').classList.add('text-green-600');
-
             event.preventDefault(); // Prevent default form submission to stay on the page
+
+            const submitButton = document.getElementById('checkout-form').querySelector('button[type="submit"]'); // More specific selector
+            const confirmationMessage = document.getElementById('order-confirmation-message');
+
+            // Disable button and show loading message
+            submitButton.disabled = true;
+            confirmationMessage.textContent = '¡Enviando pedido...!';
+            confirmationMessage.classList.remove('text-red-600');
+            confirmationMessage.classList.add('text-green-600');
 
             const form = event.target;
             const formData = new FormData(form);
@@ -760,26 +765,44 @@
                     'Accept': 'application/json' // Important for Formsubmit to send JSON response
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log('Formsubmit raw response:', response); // Log the full response
+                if (!response.ok) {
+                    console.error('Error en la respuesta del servidor:', response.status, response.statusText);
+                    // Attempt to parse JSON even if response is not OK, as Formsubmit might send error details in JSON
+                    return response.json().catch(() => {
+                        // If JSON parsing fails, throw a generic error
+                        throw new Error('Error en la respuesta del servidor y no se pudo parsear JSON.');
+                    });
+                }
+                return response.json();
+            })
             .then(data => {
+                console.log('Formsubmit response data:', data); // Log the parsed data
                 if (data.success) {
-                    document.getElementById('order-confirmation-message').textContent = '¡Pedido enviado con éxito! Revisa tu correo para la confirmación. Nos pondremos en contacto contigo para coordinar el pago y la entrega.';
-                    document.getElementById('order-confirmation-message').classList.remove('text-red-600');
-                    document.getElementById('order-confirmation-message').classList.add('text-green-600');
+                    confirmationMessage.textContent = '¡Pedido enviado con éxito! Revisa tu correo para la confirmación. Nos pondremos en contacto contigo para coordinar el pago y la entrega.';
+                    confirmationMessage.classList.remove('text-red-600');
+                    confirmationMessage.classList.add('text-green-600');
                     cart = [];
                     updateCartDisplay();
                     form.reset();
                 } else {
-                    document.getElementById('order-confirmation-message').textContent = 'Hubo un error al enviar tu pedido. Por favor, inténtalo de nuevo.';
-                    document.getElementById('order-confirmation-message').classList.remove('text-green-600');
-                    document.getElementById('order-confirmation-message').classList.add('text-red-600');
+                    // Formsubmit might return success: false or other errors in the data
+                    console.error('Error al enviar el pedido a Formsubmit:', data);
+                    confirmationMessage.textContent = 'Hubo un error al enviar tu pedido. Por favor, inténtalo de nuevo.';
+                    confirmationMessage.classList.remove('text-green-600');
+                    confirmationMessage.classList.add('text-red-600');
                 }
             })
             .catch(error => {
-                console.error('Error submitting form:', error);
-                document.getElementById('order-confirmation-message').textContent = 'Hubo un error de conexión al enviar tu pedido. Por favor, inténtalo de nuevo.';
-                document.getElementById('order-confirmation-message').classList.remove('text-green-600');
-                document.getElementById('order-confirmation-message').classList.add('text-red-600');
+                console.error('Error en la solicitud fetch:', error);
+                confirmationMessage.textContent = 'Hubo un error de conexión al enviar tu pedido. Por favor, inténtalo de nuevo.';
+                confirmationMessage.classList.remove('text-green-600');
+                confirmationMessage.classList.add('text-red-600');
+            })
+            .finally(() => {
+                // Re-enable the button regardless of success or failure
+                submitButton.disabled = false;
             });
         }
 
@@ -796,3 +819,4 @@
     </script>
 </body>
 </html>
+
