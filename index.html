@@ -520,8 +520,7 @@
                     <input type="hidden" name="_subject" id="form-subject" value="Nuevo Pedido EMECEGÉ">
                     <!-- Disable captcha for testing, remove for production -->
                     <input type="hidden" name="_captcha" value="false">
-                    <!-- Redirect to a thank you page after submission (optional) -->
-                    <input type="hidden" name="_next" value="https://yourdomain.com/thankyou.html">
+                    <!-- REMOVED: <input type="hidden" name="_next" value="https://yourdomain.com/thankyou.html"> -->
 
                     <div class="mb-4">
                         <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Nombre Completo:</label>
@@ -742,15 +741,16 @@
             document.getElementById('order-confirmation-message').textContent = ''; // Clear confirmation message
         }
 
-        // Function for checkout (form submission)
-        function submitOrder(event) {
+        // Add event listener for form submission
+        document.getElementById('checkout-form').addEventListener('submit', function(event) {
             event.preventDefault(); // Prevent default form submission to stay on the page
 
-            const submitButton = document.getElementById('checkout-form').querySelector('button[type="submit"]'); // More specific selector
+            const submitButton = document.getElementById('submit-order-button');
             const confirmationMessage = document.getElementById('order-confirmation-message');
 
             // Disable button and show loading message
             submitButton.disabled = true;
+            submitButton.textContent = 'Enviando...'; // Change button text to indicate loading
             confirmationMessage.textContent = '¡Enviando pedido...!';
             confirmationMessage.classList.remove('text-red-600');
             confirmationMessage.classList.add('text-green-600');
@@ -772,7 +772,7 @@
                     // Attempt to parse JSON even if response is not OK, as Formsubmit might send error details in JSON
                     return response.json().catch(() => {
                         // If JSON parsing fails, throw a generic error
-                        throw new Error('Error en la respuesta del servidor y no se pudo parsear JSON.');
+                        throw new Error(`Error ${response.status}: ${response.statusText || 'Respuesta no exitosa del servidor.'}`);
                     });
                 }
                 return response.json();
@@ -789,22 +789,24 @@
                 } else {
                     // Formsubmit might return success: false or other errors in the data
                     console.error('Error al enviar el pedido a Formsubmit:', data);
-                    confirmationMessage.textContent = 'Hubo un error al enviar tu pedido. Por favor, inténtalo de nuevo.';
+                    confirmationMessage.textContent = `Hubo un error al enviar tu pedido: ${data.message || 'Error desconocido.'}`;
                     confirmationMessage.classList.remove('text-green-600');
                     confirmationMessage.classList.add('text-red-600');
                 }
             })
             .catch(error => {
                 console.error('Error en la solicitud fetch:', error);
-                confirmationMessage.textContent = 'Hubo un error de conexión al enviar tu pedido. Por favor, inténtalo de nuevo.';
+                confirmationMessage.textContent = `Hubo un error de conexión: ${error.message || 'Por favor, inténtalo de nuevo.'}`;
                 confirmationMessage.classList.remove('text-green-600');
                 confirmationMessage.classList.add('text-red-600');
             })
             .finally(() => {
                 // Re-enable the button regardless of success or failure
                 submitButton.disabled = false;
+                submitButton.textContent = 'Confirmar Pedido'; // Restore original button text
             });
-        }
+        });
+
 
         // Close the modal if the user clicks anywhere outside of it
         window.onclick = function(event) {
